@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "seasadj"
-version = "0.1.0"
+version = "1.0.0"
 description = "X-11 style seasonal adjustment for any cycle length (daily, weekly, ...): multiplicative, additive, and log-additive decomposition"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,7 +13,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "Tetsuma ARITA" }]
 keywords = ["seasonal-adjustment", "time-series", "decomposition", "X-11", "trend", "seasonality"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Programming Language :: Python :: 3",

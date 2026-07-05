@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0 - 2026-07-06
+
+First public release on PyPI. Numerical behavior is unchanged from 0.1.0
+(bit-identical to Fortran90 Ver16_00); this release reflects documentation
+and metadata updates from the pre-publication review only.
+
+- Pre-publication documentation review (README updates).
+- No changes to `src/seasadj/`.
+
 ## 0.1.0 - 2026-07-05
 
 Initial release. Python port of the Fortran90 `seasonal_adj` program
