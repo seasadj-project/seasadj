@@ -1,6 +1,8 @@
 # Contributing
 
-Bug reports and feature suggestions are very welcome — please open an issue.
+Bug reports, feature suggestions and usage questions are all very welcome —
+please open an issue. This is also the way to reach the maintainer for
+support.
 
 Pull requests are **not accepted at this time**. This project is dual-licensed
 (AGPL-3.0-or-later plus a separate commercial license; see
