@@ -1,32 +1,33 @@
 # seasadj
 
 X-11 style seasonal adjustment, generalized to an arbitrary cycle length.
-`period=7` for the day-of-week cycle of daily data, `period=12` for monthly
-data, or any other cycle length your data has — X-13ARIMA-SEATS only
-handles monthly and quarterly data, and this package covers the rest.
+`period=7` for the day-of-week cycle of daily data, `period=24` for the
+daily cycle of hourly data, or any other cycle length your data has —
+X-13ARIMA-SEATS only handles monthly and quarterly data, and this package
+covers the rest.
 
 [日本語版 README](README.ja.md)
 
 ## Why this exists
 
 X-13ARIMA-SEATS is the standard tool for seasonal adjustment, but its X-11
-core is hard-wired for monthly (period 12) or quarterly (period 4) data. Many
-real series — daily data with a weekly cycle, weekly data with an annual
-cycle, etc. — don't fit that mold.
+core is hard-wired for monthly (period 12) or quarterly (period 4) data.
+More and more real series — daily data with a weekly cycle, hourly data
+with a daily cycle, etc. — don't fit that mold.
 
-This package takes the X-11 procedure apart: the parts that are genuinely
-cycle-length-independent (outlier and holiday adjustment, level-shift
-adjustment, forecast extension) are left to X-13ARIMA-SEATS's RegARIMA
-pre-adjustment, which already does this well. Only the X-11 core — moving
-averages, seasonal filter selection, extreme-value replacement — is
-reimplemented here, generalized to any cycle length.
+This package takes the X-11 procedure apart: outlier, holiday and
+level-shift adjustment and forecast extension are left to X-13ARIMA-SEATS's
+RegARIMA pre-adjustment, which works for any cycle length and has a proven
+track record. The cycle-length-bound X-11 core — moving averages, automatic
+seasonal filter selection, extreme-value replacement — is reimplemented
+here, generalized to any cycle length.
 
 ## Features
 
 - Multiplicative, additive and log-additive decomposition modes
 - Log-additive mode includes the Thomson & Ozaki (2002) trend bias
   correction
-- X-11 extreme SI-ratio replacement
+- Outlier handling via SI ratios (X-11 extreme value replacement)
 - Automatic seasonal filter selection (3x3/3x5/3x9) via the moving seasonality
   ratio (MSR)
 - Automatic Henderson moving average term selection
@@ -44,7 +45,7 @@ pip install seasadj
 import math
 from seasadj import decompose
 
-# a toy series with a 7-day seasonal cycle
+# a synthetic series with a 7-day seasonal cycle
 data = [100 + 0.05 * i + 20 * math.sin(2 * math.pi * i / 7) for i in range(400)]
 
 result = decompose(data, period=7)
@@ -113,8 +114,8 @@ formats and module-to-Fortran-source mapping (developer-facing, Japanese).
 | `ao_effect` | `None` | Additive-outlier prior-adjustment factor |
 | `ls_effect` | `None` | Level-shift prior-adjustment factor |
 | `seasonal_ma` | `3` | Initial seasonal moving average term: 3, 5 or 9 (3x3/3x5/3x9) |
-| `replace_extreme` | `True` | X-11 extreme SI-ratio replacement |
-| `sigma` | `(1.5, 2.5)` | `(lower, upper)` sigma limits for extreme SI-ratio replacement |
+| `replace_extreme` | `True` | Outlier replacement (X-11 extreme value replacement) |
+| `sigma` | `(1.5, 2.5)` | `(lower, upper)` sigma limits for outlier replacement |
 | `ft_o` | `1` | Running position of the first observation (rarely changed) |
 | `verbose` | `False` | If `True`, print progress lines; otherwise they land in `diagnostics["log"]` |
 
@@ -191,6 +192,6 @@ updated once it is available.
 later (AGPL-3.0-or-later) — see [LICENSE](LICENSE).
 
 If the AGPL's terms don't work for your use case (e.g. embedding in
-proprietary software), a commercial license is available, as is
-collaboration on research or customization. Please open an issue on
-GitHub to get in touch.
+proprietary software), or if you are interested in research collaboration
+or customization, inquiries are welcome — please open an issue on GitHub
+to get in touch.
