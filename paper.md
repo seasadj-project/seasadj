@@ -10,10 +10,10 @@ tags:
   - seasonality
 authors:
   - name: Tetsuma ARITA
-    orcid: TODO(user) # obtain at https://orcid.org/ and fill in before submission
+    orcid: https://orcid.org/0000-0003-1335-4572
     affiliation: 1
 affiliations:
-  - name: TODO(user) # affiliation name, and country
+  - name: Bank of Japan, Japan
     index: 1
 date: TODO(user) # fill in at submission time, e.g. 05 October 2026
 bibliography: paper.bib
