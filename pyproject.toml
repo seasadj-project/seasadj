@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seasadj"
+version = "0.1.0"
+description = "X-11 style seasonal adjustment for any cycle length (daily, weekly, ...): multiplicative, additive, and log-additive decomposition"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{ name = "Tetsuma ARITA" }]
+keywords = ["seasonal-adjustment", "time-series", "decomposition", "X-11", "trend", "seasonality"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/seasadj-project/seasadj"
+
+[project.scripts]
+seasadj = "seasadj.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+seasadj = ["para/*.dat"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
