@@ -10,7 +10,7 @@ tags:
   - seasonality
 authors:
   - name: Tetsuma ARITA
-    orcid: https://orcid.org/0000-0003-1335-4572
+    orcid: 0000-0003-1335-4572
     affiliation: 1
 affiliations:
   - name: Bank of Japan, Japan
