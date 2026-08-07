@@ -62,6 +62,16 @@ series and diagnostics. For multiplicative/log models,
 `prior_adjusted ≈ trend * seasonal * irregular`; for the additive model,
 `prior_adjusted ≈ trend + seasonal + irregular`.
 
+The multiplicative and log models require strictly positive `data` (and
+`forecast`, if given); `decompose()` raises `SeasadjError` otherwise. The
+additive model accepts zero and negative values.
+
+## Examples
+
+[examples/](examples/) reproduces the day-of-week seasonal adjustment
+analysis of Arita (2022) — see the Citation section below — on real daily
+COVID-19 case counts, using only public data.
+
 ## Preparing inputs with X-13ARIMA-SEATS
 
 `decompose()` expects data that has already been adjusted for holidays,
@@ -180,11 +190,6 @@ If you use this package in research, please cite:
 > Arita, Tetsuma (2022). "Assessment of the spread of COVID-19 in seven
 > countries using a seasonal adjustment method." *Statistical Journal of
 > the IAOS*. https://doi.org/10.3233/SJI-220932
-
-A paper describing the Ver14-16 extensions implemented in this package
-(extreme SI-ratio replacement, additive/log-additive modes, Thomson &
-Ozaki trend bias correction) is in preparation; this citation will be
-updated once it is available.
 
 ## License / Commercial use
 

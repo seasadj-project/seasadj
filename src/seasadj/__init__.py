@@ -7,7 +7,7 @@ from .api import Decomposition, decompose
 from .main import run
 from .reg import AbortRun, SeasadjError
 
-__version__ = "0.1.0"
+__version__ = "1.0.1"
 
 __all__ = ["run", "decompose", "Decomposition", "SeasadjError", "AbortRun",
            "__version__"]
