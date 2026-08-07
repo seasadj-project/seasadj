@@ -32,6 +32,15 @@ class Decomposition:
     Identities (within floating-point rounding):
       multiplicative / log : prior_adjusted ~= trend * seasonal * irregular
       additive              : prior_adjusted ~= trend + seasonal + irregular
+
+    `internals` holds intermediate series from the three-pass X-11
+    procedure (TC1, SI1, S1, TC2, ... — see the module docs for the
+    pipeline). Series-edge entries that have no valid value are padded:
+    0.0 for the multiplicative/log model, -999.0 for the additive model,
+    and 1.0 for weight series (matches the file-mode output convention).
+    `internals` is exposed for inspection and diagnostics; its keys and
+    contents are an implementation detail and are not covered by any
+    backward-compatibility guarantee.
     """
 
     observed: list
@@ -148,7 +157,27 @@ def decompose(
                                        diagnostics["log"] instead.
 
     Returns a Decomposition. Raises SeasadjError on invalid input (same
-    conditions as the file-mode parameter/data validation).
+    conditions as the file-mode parameter/data validation), most commonly:
+
+      - `data` (or `forecast`) too short: fewer than 20 observations, or
+        fewer than `period * (seasonal_ma + 3)` (more if
+        `replace_extreme=True`).
+      - `data`, `forecast` or any of the `*_effect` arguments contains a
+        non-positive value, for `model="multiplicative"` or `"log"` (the
+        additive model accepts zero/negative values).
+      - an out-of-range argument, e.g. `period < 2`, `first_position` not
+        in `1..period`, or `seasonal_ma` not in `(3, 5, 9)`.
+
+    Validation reports the *first* failure it finds and checks data length
+    before checking that values are positive — so on data that is both too
+    short and non-positive, the length error is raised, not the sign one.
+
+    Example::
+
+        from seasadj import decompose
+
+        result = decompose(daily_counts, period=7, first_position=3)
+        print(result.trend[-1], result.seasonal[-1])
     """
     if not isinstance(period, int) or period < 2:
         raise SeasadjError("period must be 2 or larger")

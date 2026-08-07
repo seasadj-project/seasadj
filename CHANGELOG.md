@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.1 - 2026-08-06
+
+- Fixed: `seasadj.__version__` reported `0.1.0` instead of the released
+  version.
+- Added: `examples/` with a reproduction of the Arita (2022) daily
+  COVID-19 seasonal adjustment analysis on public JHU CSSE data
+  (documentation only; not part of the installed package).
+- Docs: README (English and Japanese) and docstring improvements,
+  including removal of an outdated "in preparation" citation note.
+
+No changes to numerical behavior — `src/seasadj/` differs from 1.0.0 only
+in docstrings, comments, and the `__version__` string; still bit-identical
+to Fortran90 Ver16_00.
+
 ## 1.0.0 - 2026-07-06
 
 First public release on PyPI. Numerical behavior is unchanged from 0.1.0

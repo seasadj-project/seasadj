@@ -52,6 +52,15 @@ print(result.irregular[:5])  # 不規則変動
 乗法型・対数変換型では `prior_adjusted ≈ trend * seasonal * irregular`、
 加法型では `prior_adjusted ≈ trend + seasonal + irregular` が成り立つ。
 
+乗法型・対数変換型は `data`（および渡す場合は `forecast`）が正値であることを
+要求する。満たさない場合は `decompose()` が `SeasadjError` を送出する。加法型
+はゼロ・負値を受け付ける。
+
+## Examples
+
+[examples/](examples/) には、Arita (2022)（下記Citation参照）の曜日周期
+季節調整分析を、公開データのみを使って再現する例がある。
+
 ## X-13ARIMA-SEATSによる入力の準備
 
 `decompose()` は、休日・外れ値・水準シフトの調整が済んだデータ（またはこれらの
@@ -161,10 +170,6 @@ python -m pytest tests/ -v
 > Arita, Tetsuma (2022). "Assessment of the spread of COVID-19 in seven
 > countries using a seasonal adjustment method." *Statistical Journal of
 > the IAOS*. https://doi.org/10.3233/SJI-220932
-
-本パッケージのVer14〜16拡張（極端SI比の置換、加法型・対数変換型モード、
-Thomson & Ozaki のトレンドバイアス補正）を扱う論文は準備中（in
-preparation）。確定次第この引用を差し替える。
 
 ## ライセンス・商用利用について
 
