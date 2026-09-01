@@ -3,6 +3,7 @@ __pycache__/
 .pytest_cache/
 result.txt
 result_aug.txt
+result_sep.txt
 dist/
 build/
 *.egg-info/
