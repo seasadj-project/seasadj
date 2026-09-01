@@ -189,7 +189,7 @@ If you use this package in research, please cite:
 
 > Arita, Tetsuma (2022). "Assessment of the spread of COVID-19 in seven
 > countries using a seasonal adjustment method." *Statistical Journal of
-> the IAOS*. https://doi.org/10.3233/SJI-220932
+> the IAOS*, 38(2), 363-383. https://doi.org/10.3233/SJI-220932
 
 ## License / Commercial use
 

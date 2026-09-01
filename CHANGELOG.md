@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Fixed: the bibliographic record for Arita (2022) in `paper.bib` gave the
+  wrong page range (353-361); the correct range is 363-383. The Citation
+  section of both READMEs now carries volume, issue and pages as well.
+- Docs: removed the placeholder `TODO` markers from `paper.md`, and the
+  outdated statement that a follow-up methods paper is in preparation for
+  the Statistical Journal of the IAOS.
+
+No changes to `src/seasadj/`.
+
 ## 1.0.1 - 2026-08-06
 
 - Fixed: `seasadj.__version__` reported `0.1.0` instead of the released
