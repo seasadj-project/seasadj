@@ -8,6 +8,15 @@
 - Docs: removed the placeholder `TODO` markers from `paper.md`, and the
   outdated statement that a follow-up methods paper is in preparation for
   the Statistical Journal of the IAOS.
+- Tests: added even-period coverage (periods 2, 4, 12, 24 across all three
+  models, including recovery of a known seasonal pattern) and boundary-condition
+  tests for the three minimum-length rules.
+- Known issue found by the new boundary tests (tracked, not yet fixed):
+  `decompose()`/file mode raises an unhandled `IndexError` instead of
+  succeeding when the input length is exactly `max_t` (7300) observations
+  with no forecast extension -- a latent array-bounds defect present in the
+  Fortran reference as well as the Python port. Marked `xfail` in
+  `tests/test_boundaries.py`; a fix is planned for a future release.
 
 No changes to `src/seasadj/`.
 
