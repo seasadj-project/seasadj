@@ -15,7 +15,7 @@ authors:
 affiliations:
   - name: Bank of Japan, Japan
     index: 1
-date: TODO(user) # fill in at submission time, e.g. 25 July 2026
+date: 1 September 2026
 bibliography: paper.bib
 ---
 
@@ -135,14 +135,15 @@ from seven countries to separate day-of-week reporting patterns from the
 underlying course of the epidemic. Until now the method existed only as
 an unpublished Fortran research program, so that analysis could not be
 reproduced or extended without access to the author's environment;
-`seasadj` makes the method installable by anyone. A follow-up methods
-paper covering the extensions implemented in this package — extreme
-SI-ratio replacement generalized to arbitrary periods, additive and
-log-additive decomposition modes, and trend bias correction after log
-transformation — is in preparation for the Statistical Journal of the
-IAOS [TODO(update at submission): reflect the actual status — e.g.
-"under review" or a citation if accepted], with all of its computations
-performed with `seasadj`.
+`seasadj` makes the method installable by anyone: the `examples/`
+directory rebuilds that analysis for the paper's seven countries from
+public data with `pip install seasadj` alone, and documents where it
+necessarily departs from the published run. The package also implements
+extensions developed after that paper — extreme SI-ratio replacement
+generalized to arbitrary periods, additive and log-additive
+decomposition modes, and trend bias correction after the log
+transformation [@ThomsonOzaki2002] — making them available to other
+researchers rather than leaving them in a private research program.
 
 # AI usage disclosure
 
@@ -158,10 +159,5 @@ verified bit for bit against the human-written Fortran reference on the
 frozen golden-test suite described above, and the public test suite
 runs in continuous integration. All repository commits were reviewed
 and made by the author.
-
-# Acknowledgements
-
-TODO(user): optional — add acknowledgements here, or delete this section
-before submission.
 
 # References
