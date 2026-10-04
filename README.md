@@ -115,7 +115,7 @@ formats and module-to-Fortran-source mapping (developer-facing, Japanese).
 |---|---|---|
 | `data` | required | Observed values (list/tuple/`np.ndarray`/`pd.Series` of numbers) |
 | `period` | required | Seasonal cycle length (2 or larger), e.g. 7 for a day-of-week cycle |
-| `first_position` | `1` | Cycle position of `data[0]` (1..period) |
+| `first_position` | `1` | Declares the cycle position of `data[0]` (1..period). The X-11 filters work on positions relative to the start of the series, so this does not normally change the decomposition; it affects the position column of the file-mode summary and the complete-cycle trim point used when the seasonal filter length is chosen, and through the latter can occasionally change the result |
 | `model` | `"multiplicative"` | `"multiplicative"`, `"additive"` or `"log"` |
 | `forecast` | `None` | Forecast-extension values (e.g. from X-13ARIMA-SEATS) |
 | `holiday_effect` | `None` | Holiday prior-adjustment factor per period |

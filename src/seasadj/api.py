@@ -119,8 +119,18 @@ def decompose(
       period             (required) : length of the seasonal cycle, e.g. 7
                                        for a day-of-week cycle in daily data.
                                        Must be 2 or larger. (G term)
-      first_position=1              : cycle position of data[0] (1..period).
-                                       (A ini_o_day)
+      first_position=1              : declares the cycle position of data[0]
+                                       (1..period). The X-11 filters work on
+                                       positions relative to the start of the
+                                       series, so changing this value does
+                                       not normally change the decomposition.
+                                       It affects the position column of the
+                                       file-mode summary output and the trim
+                                       point that keeps only complete cycles
+                                       when the seasonal filter length is
+                                       chosen (the moving seasonality ratio);
+                                       through the latter it can occasionally
+                                       change the result. (A ini_o_day)
       model="multiplicative"        : "multiplicative", "additive" or "log".
                                        (M model)
       forecast=None                 : forecast-extension values (e.g. from
