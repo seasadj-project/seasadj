@@ -100,7 +100,7 @@ python -m seasadj <作業ディレクトリ>
 |---|---|---|
 | `data` | 必須 | 観測値（list/tuple/`np.ndarray`/`pd.Series`のいずれか） |
 | `period` | 必須 | 季節周期の長さ（2以上）。例：日次データの曜日周期なら7 |
-| `first_position` | `1` | `data[0]` の周期内位置（1..period） |
+| `first_position` | `1` | `data[0]` の周期内位置の宣言（1..period）。X-11のフィルタは系列先頭からの相対位置で動くため、通常この値を変えても分解結果は変わらない。影響するのはファイルモードの要約出力の位置列と、季節フィルタ長の選択（移動季節性比）で完全な周期だけを使うトリム位置で、後者を通じて結果がまれに変わることがある |
 | `model` | `"multiplicative"` | `"multiplicative"`・`"additive"`・`"log"` のいずれか |
 | `forecast` | `None` | 予測延長系列（X-13ARIMA-SEATS等の出力） |
 | `holiday_effect` | `None` | 休日要因の事前調整係数（周期ごと） |

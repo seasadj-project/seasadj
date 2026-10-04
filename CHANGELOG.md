@@ -11,14 +11,16 @@
 - Tests: added even-period coverage (periods 2, 4, 12, 24 across all three
   models, including recovery of a known seasonal pattern) and boundary-condition
   tests for the three minimum-length rules.
-- Known issue found by the new boundary tests (tracked, not yet fixed):
-  `decompose()`/file mode raises an unhandled `IndexError` instead of
-  succeeding when the input length is exactly `max_t` (7300) observations
-  with no forecast extension -- a latent array-bounds defect present in the
-  Fortran reference as well as the Python port. Marked `xfail` in
-  `tests/test_boundaries.py`; a fix is planned for a future release.
-
-No changes to `src/seasadj/`.
+- Fixed: `decompose()`/file mode raised an unhandled `IndexError` when the
+  input length was exactly `max_t` (7300) observations with no forecast
+  extension (a valid input). `weekday` now has one extra slot of headroom and
+  `week()` no longer clamps at `max_t`, matching its docstring. The affected
+  case is the only one that previously crashed, so results for all inputs
+  that already worked are bit-identical. The `xfail` marker on
+  `test_max_t_upper_bound_succeeds_at_limit` is removed.
+- Docs: clarified what `first_position` does (docstring and READMEs): it
+  declares the position of `data[0]`, and does not normally change the
+  decomposition.
 
 ## 1.0.1 - 2026-08-06
 

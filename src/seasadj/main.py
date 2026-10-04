@@ -48,7 +48,7 @@ def _pipeline(max_t, term, iwm_term, ft_o, rep_si, sig_l, sig_u, model,
 
     bias_sig = 0.0  # estimated in trb_cor (log model only)
 
-    weekday = ialloc(max_t)
+    weekday = ialloc(max_t + 1)  # +1: det_swm reads weekday[max_on + 1]
     adj_o = alloc(max_t)
     TC1 = alloc(max_t)
     SI1 = alloc(max_t)

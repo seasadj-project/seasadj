@@ -4,6 +4,7 @@ __pycache__/
 result.txt
 result_aug.txt
 result_sep.txt
+result_oct.txt
 dist/
 build/
 *.egg-info/

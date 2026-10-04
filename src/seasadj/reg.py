@@ -319,7 +319,7 @@ def week(max_t, weekday, term, ini_o_day, max_on, lead_on):
 
     Fills one extra slot: weekday[max_on + lead_on + 1] is referenced in det_swm.
     """
-    for i in range(1, min(max_on + lead_on + 1, max_t) + 1):
+    for i in range(1, max_on + lead_on + 2):
         weekday[i] = imod((ini_o_day - 1) + (i - 1), term) + 1
 
 

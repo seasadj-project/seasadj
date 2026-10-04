@@ -160,18 +160,6 @@ def test_max_t_upper_bound_succeeds_one_below_limit():
     assert r.n_observed == MAX_T - 1
 
 
-@pytest.mark.xfail(
-    reason=(
-        "weekday[max_t+1] is never filled (reg.week()'s min(...,max_t) "
-        "clamp) and st2.det_swm() unconditionally reads it -- an unhandled "
-        "IndexError, only when max_on == max_t and lead_on == 0. Fix "
-        "planned for v1.1.0 (give weekday one extra slot of headroom and "
-        "drop the now-unnecessary clamp); out of scope for this month's "
-        "test-only task. strict=False: an unexpected pass (once the fix "
-        "lands) is reported as XPASS but does not fail the suite."
-    ),
-    strict=False,
-)
 def test_max_t_upper_bound_succeeds_at_limit():
     data = _series(MAX_T)
     r = decompose(data, 7)
