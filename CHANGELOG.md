@@ -1,7 +1,28 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-10-04
 
+- Added: **CSV mode** for the command line. `seasadj data.csv --period 7`
+  reads one value column from a CSV file (header, date column and column
+  choice are handled; the date column is only copied to the output as a label
+  and is never interpreted), runs `decompose()` and writes
+  `date,observed,prior_adjusted,trend,seasonal,irregular,adjusted` to
+  `<input>_seasadj.csv` (or `-o PATH`, `-o -` for standard output), with a
+  short run summary on standard error (`--quiet` to suppress). Options:
+  `--column`, `--date-column`, `--no-header`, `--first-position`, `--model`,
+  `--seasonal-ma`, `--sigma`, `--no-replace-extreme`, `--version`. Errors are
+  reported as messages (non-numeric cells with the row number), not
+  tracebacks. `seasadj <workdir>` keeps working exactly as before.
+- Added: `docs/file-formats.md` documenting the working-directory (file-mode)
+  input and output files: the 13 parameter blocks of `i00_inp.dat`,
+  `i01`-`i06`, `o01`-`o25`, edge padding conventions and a minimal run.
+- Added: `py.typed` marker, so type checkers use the package's annotations.
+- Fixed: the file mode (`seasadj <workdir>`) crashed with a raw
+  `FileNotFoundError` for pip-installed users whose working directory has no
+  `para/`. Each weight file is now taken from `<workdir>/para/` if present,
+  otherwise from the copy bundled in the package (the two are identical).
+  A missing `in_data/i00_inp.dat` or `i01_org_ser.dat` now reports the expected
+  layout.
 - Fixed: the bibliographic record for Arita (2022) in `paper.bib` gave the
   wrong page range (353-361); the correct range is 363-383. The Citation
   section of both READMEs now carries volume, issue and pages as well.
@@ -21,6 +42,8 @@
 - Docs: clarified what `first_position` does (docstring and READMEs): it
   declares the position of `data[0]`, and does not normally change the
   decomposition.
+- Tests: added `tests/test_cli.py` (CSV mode, `para/` fallback, error paths).
+- Unchanged: numerical results are bit-identical to v1.0.x.
 
 ## 1.0.1 - 2026-08-06
 

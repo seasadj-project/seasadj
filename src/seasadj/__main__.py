@@ -1,24 +1,14 @@
-"""CLI: python -m seasadj [workdir] / seasadj [workdir]
+"""CLI: python -m seasadj [PATH] / seasadj [PATH]
 
-The working directory must hold in_data/ and para/ (same layout as the
-Fortran executable expects); out_data/ is created if missing.
+PATH is a CSV file (CSV mode: needs --period) or a working directory holding
+in_data/ (file mode, the same layout as the Fortran executable; para/ is
+optional). Without PATH the current directory is used as the working
+directory. Run with --help for the options. See cli.py.
 """
 
 import sys
 
-from .main import run
-from .reg import SeasadjError
-
-
-def main(argv=None):
-    args = sys.argv[1:] if argv is None else argv
-    workdir = args[0] if args else "."
-    try:
-        run(workdir)
-    except SeasadjError:
-        return 1
-    return 0
-
+from .cli import main
 
 if __name__ == "__main__":
     sys.exit(main())

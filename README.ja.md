@@ -32,6 +32,47 @@ pip install seasadj
 
 ## クイックスタート
 
+系列をCSVファイル（観測値の列が1つ。ヘッダ・日付列はあってもなくてもよい）に
+入れて、次を実行する：
+
+```bash
+pip install seasadj
+seasadj data.csv --period 7
+```
+
+入力と同じ場所に `data_seasadj.csv` が書き出される。列は
+`date,observed,prior_adjusted,trend,seasonal,irregular,adjusted`（`date` は
+入力に日付列があればそのまま写す。見出しとしてのみ使い、解釈も計算への利用も
+しない）。あわせて実行の要約が表示される。`--period` は季節周期の長さ（日次
+データの曜日周期なら7）。オプション：
+
+| オプション | 既定値 | 内容 |
+|---|---|---|
+| `--period N` | 必須 | 季節周期の長さ |
+| `--column NAME\|INDEX` | 最終列 | 観測値の列（ヘッダ名または0始まりの列番号） |
+| `--date-column NAME\|INDEX` | 先頭列 | ラベル列。出力の見出しにのみ使う |
+| `--no-header` | | 先頭行をヘッダではなくデータとして扱う |
+| `--first-position N` | `1` | 先頭値の周期内位置 |
+| `--model {multiplicative,additive,log}` | `multiplicative` | 分解モデル |
+| `--seasonal-ma {3,5,9}` | `3` | 初期の季節移動平均の項数 |
+| `--sigma LOW UPPER` | `1.5 2.5` | 極端値置換のシグマ限界 |
+| `--no-replace-extreme` | | 極端値置換をオフにする |
+| `-o, --output PATH` | `<入力>_seasadj.csv` | 出力先（`-` で標準出力） |
+| `--quiet` | | 標準エラー出力への要約を抑止する |
+
+予測延長や休日・外れ値・水準シフトの調整はCSVモードでは使えない。これらが必要
+な場合は、Python APIか下記のファイルモードを使う。
+
+## 3つの使い方
+
+| インターフェース | こんなとき |
+|---|---|
+| **CSVモード** — `seasadj data.csv --period 7` | CSVファイルがあり、結果もCSVで欲しい。最も手軽 |
+| **Python API** — `decompose(data, period)` | Pythonで作業している。または予測延長・休日／外れ値／水準シフトの調整・診断値が必要 |
+| **ファイルモード** — `seasadj <作業ディレクトリ>` | Fortran版からの移行。またはFortran版の中間出力ファイルが必要 |
+
+## Python API
+
 ```python
 import math
 from seasadj import decompose
@@ -79,9 +120,9 @@ print(result.irregular[:5])  # 不規則変動
 
 ## ファイルモード（Fortran互換CLI）
 
-オリジナルのFortranプログラムとの互換性のため、`seasadj` には `in_data/` +
-`para/` を持つ作業ディレクトリを読み `out_data/` を書き出すファイルベースの
-モードもある：
+オリジナルのFortranプログラムとの互換性のため、`seasadj` には `in_data/` を
+持つ作業ディレクトリを読み `out_data/` を書き出すファイルベースのモードもある
+（`para/` は省略可能。ウェイトファイルはパッケージに同梱されている）：
 
 ```bash
 seasadj <作業ディレクトリ>
@@ -89,8 +130,10 @@ seasadj <作業ディレクトリ>
 python -m seasadj <作業ディレクトリ>
 ```
 
-ファイル形式やFortranソースとのモジュール対応表は
-[docs/porting-notes.ja.md](docs/porting-notes.ja.md)（開発者向け）を参照。
+ファイル形式は [docs/file-formats.md](docs/file-formats.md)（英語）を参照。
+Fortranソースとのモジュール対応表は
+[docs/porting-notes.ja.md](docs/porting-notes.ja.md)（開発者向け）にある。
+新規の利用にはCSVモードかPython APIを推奨する。
 
 ## API仕様
 
