@@ -41,6 +41,47 @@ pip install seasadj
 
 ## Quick start
 
+Put your series in a CSV file (one value column, optionally with a header and
+a date column) and run:
+
+```bash
+pip install seasadj
+seasadj data.csv --period 7
+```
+
+This writes `data_seasadj.csv` next to the input, with the columns
+`date,observed,prior_adjusted,trend,seasonal,irregular,adjusted` (the `date`
+column is copied from your file, if it has one; it is only a label and is never
+interpreted), and prints a short summary of the run. `--period` is the length
+of the seasonal cycle (7 for the day-of-week cycle of daily data). Options:
+
+| Option | Default | Description |
+|---|---|---|
+| `--period N` | required | Seasonal cycle length |
+| `--column NAME\|INDEX` | last column | Column holding the observed values (header name or 0-based index) |
+| `--date-column NAME\|INDEX` | first column | Label column, copied to the output heading only |
+| `--no-header` | | The first row is data, not a header |
+| `--first-position N` | `1` | Cycle position of the first value |
+| `--model {multiplicative,additive,log}` | `multiplicative` | Decomposition model |
+| `--seasonal-ma {3,5,9}` | `3` | Initial seasonal moving average term |
+| `--sigma LOW UPPER` | `1.5 2.5` | Sigma limits for extreme-value replacement |
+| `--no-replace-extreme` | | Turn off extreme-value replacement |
+| `-o, --output PATH` | `<input>_seasadj.csv` | Output file (`-` for standard output) |
+| `--quiet` | | No summary on standard error |
+
+Forecast extension and holiday / outlier / level-shift adjustment are not
+available in CSV mode; use the Python API or the file mode below for those.
+
+## Three ways to use it
+
+| Interface | Use it when |
+|---|---|
+| **CSV mode** — `seasadj data.csv --period 7` | You have a CSV file and want the result as a CSV file. The easiest start |
+| **Python API** — `decompose(data, period)` | You work in Python, or need forecast extension, holiday/outlier/level-shift adjustment or the diagnostics |
+| **File mode** — `seasadj <workdir>` | You are migrating from the Fortran version, or need its intermediate output files |
+
+## Python API
+
 ```python
 import math
 from seasadj import decompose
@@ -95,8 +136,9 @@ factors to divide by.
 ## File mode (Fortran-compatible CLI)
 
 For compatibility with the original Fortran program, `seasadj` also has a
-file-based mode that reads a working directory laid out as
-`in_data/` + `para/` and writes `out_data/`:
+file-based mode that reads a working directory laid out as `in_data/`
+(`para/` is optional: the weight files are bundled with the package) and
+writes `out_data/`:
 
 ```bash
 seasadj <workdir>
@@ -104,8 +146,10 @@ seasadj <workdir>
 python -m seasadj <workdir>
 ```
 
-See [docs/porting-notes.ja.md](docs/porting-notes.ja.md) for the file
-formats and module-to-Fortran-source mapping (developer-facing, Japanese).
+See [docs/file-formats.md](docs/file-formats.md) for the file formats. (The
+module-to-Fortran-source mapping is in
+[docs/porting-notes.ja.md](docs/porting-notes.ja.md); developer-facing,
+Japanese.) For new work, the CSV mode or the Python API is recommended.
 
 ## API reference
 

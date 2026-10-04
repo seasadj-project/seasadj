@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from . import var
 from .ftn import alloc, ialloc, idiv, imod
 from .reg import (read_para, read_data, det_hol, det_ao, det_ls,
-                  check_inputs, adj_org, week)
+                  check_inputs, adj_org, week, abort_run)
 from .wma import wm_ave
 from .st1 import mov_ave, Ini_SI, Ini_S, std_sf
 from .st2 import hmv_ave, dev_dat, det_het, det_swm
@@ -250,14 +250,46 @@ def _pipeline(max_t, term, iwm_term, ft_o, rep_si, sig_l, sig_u, model,
     )
 
 
+def _resolve_weights(wd):
+    """Locate the 11 weight files, one file at a time: workdir/para/<name> if
+    it exists (the Fortran layout), else the copy bundled in the package."""
+    bundled = Path(var.bundled_para_dir())
+    paths = {}
+    for key, rel in (("wm3", var.wm3_w), ("wm5", var.wm5_w), ("wm9", var.wm9_w),
+                     ("pwm3", var.pwm3_w), ("pwm5", var.pwm5_w),
+                     ("pwm9", var.pwm9_w), ("h5", var.h5_w), ("h7", var.h7_w),
+                     ("h9", var.h9_w), ("h13", var.h13_w), ("h23", var.h23_w)):
+        local = wd / rel
+        fallback = bundled / Path(rel).name
+        if local.is_file():
+            paths[key] = str(local)
+        elif fallback.is_file():
+            paths[key] = str(fallback)
+        else:
+            abort_run(f"weight file not found: {rel} (looked in {wd} and in the"
+                      f" bundled para directory {bundled}); reinstall seasadj,"
+                      " or put the para/ directory of the Fortran version in"
+                      " the working directory")
+    return paths
+
+
 def run(workdir="."):
-    """Run the whole decomposition in the given working directory (which must
-    hold in_data/ and para/, as for the Fortran executable). Writes out_data/
-    and returns a dict of the internal values (for tests and callers)."""
+    """Run the whole decomposition in the given working directory, which must
+    hold in_data/ (as for the Fortran executable). para/ is optional: each
+    weight file is taken from workdir/para/ if present there, otherwise from
+    the copy bundled in the package. Writes out_data/ and returns a dict of
+    the internal values (for tests and callers)."""
     wd = Path(workdir)
 
     def p(rel):
         return str(wd / rel)
+
+    for rel in (var.f_inp, var.f_org):
+        if not (wd / rel).is_file():
+            abort_run(f"required input file not found: {wd / rel}. The working"
+                      f" directory must contain in_data/ ({var.f_inp} and"
+                      f" {var.f_org} are required; para/ is optional)."
+                      " See docs/file-formats.md")
 
     (wd / "out_data").mkdir(parents=True, exist_ok=True)
 
@@ -293,12 +325,7 @@ def run(workdir="."):
     ls_eff_n = det_ls(reg_ls, p(var.f_eff_ls), max_t, max_on, lead_on, model, ls_eff)
 
     # paths of the weight files
-    weights = {
-        "wm3": p(var.wm3_w), "wm5": p(var.wm5_w), "wm9": p(var.wm9_w),
-        "pwm3": p(var.pwm3_w), "pwm5": p(var.pwm5_w), "pwm9": p(var.pwm9_w),
-        "h5": p(var.h5_w), "h7": p(var.h7_w), "h9": p(var.h9_w),
-        "h13": p(var.h13_w), "h23": p(var.h23_w),
-    }
+    weights = _resolve_weights(wd)
 
     r = _pipeline(max_t, term, iwm_term, ft_o, rep_si, sig_l, sig_u, model,
                   forecasting, ini_o_day, max_on, lead_on, o, lead_o,

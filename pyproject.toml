@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "seasadj"
-version = "1.0.1"
+version = "1.1.0"
 description = "X-11 style seasonal adjustment for any cycle length (daily, weekly, ...): multiplicative, additive, and log-additive decomposition"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,7 +35,7 @@ seasadj = "seasadj.__main__:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-seasadj = ["para/*.dat"]
+seasadj = ["para/*.dat", "py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
