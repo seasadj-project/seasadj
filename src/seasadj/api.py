@@ -15,7 +15,8 @@ from pathlib import Path
 from . import var
 from .ftn import alloc
 from .main import _pipeline
-from .reg import SeasadjError, abort_run, det_hol_core, det_ao_core, det_ls_core
+from .reg import (SeasadjError, abort_run, check_total_length, det_hol_core,
+                  det_ao_core, det_ls_core)
 
 _MODEL_CODES = {"multiplicative": 0, "additive": 1, "log": 2}
 
@@ -172,6 +173,8 @@ def decompose(
       - `data` (or `forecast`) too short: fewer than 20 observations, or
         fewer than `period * (seasonal_ma + 3)` (more if
         `replace_extreme=True`).
+      - too long: `data` and `forecast` together may hold at most 7300
+        values (max_t). See docs/api.md for the details of both limits.
       - `data`, `forecast` or any of the `*_effect` arguments contains a
         non-positive value, for `model="multiplicative"` or `"log"` (the
         additive model accepts zero/negative values).
@@ -230,6 +233,8 @@ def decompose(
     else:
         lead_o, lead_on = alloc(max_t), 0
         forecasting = 0
+
+    check_total_length(max_t, max_on, lead_on)
 
     reg_hol = 1 if holiday_effect is not None else 0
     if reg_hol == 1:

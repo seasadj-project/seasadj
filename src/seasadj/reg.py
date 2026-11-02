@@ -167,6 +167,16 @@ def read_data(filename, max_t, x):
     return num_x
 
 
+def check_total_length(max_t, max_on, lead_on):
+    """Check that the original data and the forecast data together fit in
+    max_t. det_hol/det_ao/det_ls fill max_on + lead_on slots, so this must run
+    before them (check_inputs comes too late to catch it)."""
+    if max_on + lead_on > max_t:
+        abort_run(f"data and forecast together have too many observations"
+                  f" ({max_on} + {lead_on} > max_t={max_t}); this is a"
+                  " compile-time limit in the ported Fortran core")
+
+
 def det_hol_core(reg_hol, hol_eff, hol_eff_n, hol_regdat, hol_regdat_n,
                   hol_reg_p, max_on, lead_on, model):
     """Compute holiday effects (hol_eff written in place). Returns hol_eff_n.

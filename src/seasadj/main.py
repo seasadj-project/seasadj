@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 from . import var
 from .ftn import alloc, ialloc, idiv, imod
-from .reg import (read_para, read_data, det_hol, det_ao, det_ls,
-                  check_inputs, adj_org, week, abort_run)
+from .reg import (read_para, read_data, check_total_length, det_hol, det_ao,
+                  det_ls, check_inputs, adj_org, week, abort_run)
 from .wma import wm_ave
 from .st1 import mov_ave, Ini_SI, Ini_S, std_sf
 from .st2 import hmv_ave, dev_dat, det_het, det_swm
@@ -317,6 +317,8 @@ def run(workdir="."):
         lead_on = read_data(p(var.f_fct), max_t, lead_o)
     else:
         lead_on = 0
+
+    check_total_length(max_t, max_on, lead_on)
 
     # determine holiday, outlier and levelshift effects
     hol_eff_n = det_hol(reg_hol, p(var.f_eff_hol), p(var.f_reg_hol), max_t,
