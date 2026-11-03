@@ -5,6 +5,7 @@ result.txt
 result_aug.txt
 result_sep.txt
 result_oct.txt
+result_nov.txt
 dist/
 build/
 *.egg-info/

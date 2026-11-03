@@ -3,8 +3,8 @@
 X-11 style seasonal adjustment, generalized to an arbitrary cycle length.
 `period=7` for the day-of-week cycle of daily data, `period=24` for the
 daily cycle of hourly data, or any other cycle length your data has —
-X-13ARIMA-SEATS only handles monthly and quarterly data, and this package
-covers the rest.
+the X-11 core of X-13ARIMA-SEATS accepts only periods 12 and 4 (monthly and
+quarterly data), and this package covers the rest.
 
 [日本語版 README](README.ja.md)
 
@@ -16,11 +16,12 @@ More and more real series — daily data with a weekly cycle, hourly data
 with a daily cycle, etc. — don't fit that mold.
 
 This package takes the X-11 procedure apart: outlier, holiday and
-level-shift adjustment and forecast extension are left to X-13ARIMA-SEATS's
-RegARIMA pre-adjustment, which works for any cycle length and has a proven
-track record. The cycle-length-bound X-11 core — moving averages, automatic
-seasonal filter selection, extreme-value replacement — is reimplemented
-here, generalized to any cycle length.
+level-shift adjustment and forecast extension are left to a RegARIMA
+pre-adjustment such as X-13ARIMA-SEATS, which has a proven track record.
+The cycle-length-bound X-11 core — moving averages, automatic seasonal
+filter selection, extreme-value replacement — is reimplemented here with
+the cycle length as a parameter. Some of X-11's decision rules keep their
+monthly values; see [Algorithm](#algorithm).
 
 ## Features
 
@@ -30,7 +31,7 @@ here, generalized to any cycle length.
 - Outlier handling via SI ratios (X-11 extreme value replacement)
 - Automatic seasonal filter selection (3x3/3x5/3x9) via the moving seasonality
   ratio (MSR)
-- Automatic Henderson moving average term selection
+- Automatic Henderson moving average term selection (9, 13 or 23 terms)
 - Zero dependencies (standard library only)
 
 ## Install
@@ -80,6 +81,10 @@ available in CSV mode; use the Python API or the file mode below for those.
 | **Python API** — `decompose(data, period)` | You work in Python, or need forecast extension, holiday/outlier/level-shift adjustment or the diagnostics |
 | **File mode** — `seasadj <workdir>` | You are migrating from the Fortran version, or need its intermediate output files |
 
+New to `seasadj`? The [tutorial](docs/tutorial.md) walks through one series
+from start to finish. The complete reference for all three interfaces is
+[docs/api.md](docs/api.md).
+
 ## Python API
 
 ```python
@@ -111,22 +116,34 @@ additive model accepts zero and negative values.
 
 [examples/](examples/) reproduces the day-of-week seasonal adjustment
 analysis of Arita (2022) — see the Citation section below — on real daily
-COVID-19 case counts, using only public data.
+COVID-19 case counts, using only public data. For a step-by-step
+explanation on a synthetic series instead, see the
+[tutorial](docs/tutorial.md).
 
 ## Preparing inputs with X-13ARIMA-SEATS
 
 `decompose()` expects data that has already been adjusted for holidays,
 outliers and level shifts (or you can pass those effects directly — see the
 API reference below) and, optionally, a forecast extension. The usual way to
-get these is a RegARIMA run in X-13ARIMA-SEATS:
+get these is a RegARIMA run in X-13ARIMA-SEATS. X-13's `transform` spec
+applies only to the RegARIMA estimation; the tables it saves are on the
+original scale of the series, and its choice decides the form of the saved
+regression effects:
 
-- **Multiplicative or log model**: run X-13 without a `transform` (or with
-  `transform function=none` for the regressors), and use its multiplicative
-  effect estimates (values near 1.0) as `holiday_effect` / `ao_effect` /
-  `ls_effect`.
-- **Additive model**: run X-13 with `transform function=none`, and use its
-  additive effect estimates (values near 0.0, the "amount to subtract") as
-  the same arguments.
+- **Multiplicative or log model**: run X-13 with `transform{function=log}`.
+  The saved regression effects are then ratios (values near 1.0); pass them as
+  `holiday_effect` / `ao_effect` / `ls_effect`. Whether you then use
+  `model="multiplicative"` or `model="log"` is your choice: both take the
+  effects as factors.
+- **Additive model**: run X-13 with no transformation (the default). The
+  saved regression effects are then on the scale of the series (values near
+  0.0, the "amount to subtract"); pass them as the same arguments with
+  `model="additive"`.
+
+In both cases, X-13's saved forecasts (`forecast{save=(forecasts)}`) are on
+the original scale and can be passed as `forecast`. The
+[tutorial](docs/tutorial.md#7-prior-adjustment-with-x-13arima-seats) shows the
+whole procedure.
 
 Mixing the two — e.g. passing multiplicative-style effect factors while
 `model="additive"` — will silently produce a wrong adjustment, since the
@@ -153,6 +170,8 @@ Japanese.) For new work, the CSV mode or the Python API is recommended.
 
 ## API reference
 
+Full reference: [docs/api.md](docs/api.md)
+
 ### `decompose(data, period, **kwargs) -> Decomposition`
 
 | Argument | Default | Description |
@@ -172,6 +191,11 @@ Japanese.) For new work, the CSV mode or the Python API is recommended.
 | `sigma` | `(1.5, 2.5)` | `(lower, upper)` sigma limits for outlier replacement |
 | `ft_o` | `1` | Running position of the first observation (rarely changed) |
 | `verbose` | `False` | If `True`, print progress lines; otherwise they land in `diagnostics["log"]` |
+
+Data length: at least 20 observations and a minimum that depends on
+`period` (56 for `period=7` with the defaults; see
+[docs/api.md](docs/api.md#13-data-length)), and **at most 7,300 values in
+total, counting the forecast extension**.
 
 Raises `SeasadjError` on invalid input. Validation reports the first
 failure it finds, checking data length before checking that values are
@@ -202,10 +226,19 @@ index `n_observed` onward is the forecast-extension period.
 The X-11 procedure estimates trend-cycle, seasonal and irregular components
 in three passes (initial trend → intermediate estimate → final estimate),
 each refining the previous one's seasonal factor and Henderson-filtered
-trend. This package generalizes every step — the seasonal moving average,
-the Henderson filter term selection, the moving seasonality ratio, the
-extreme-value replacement — from the fixed periods of the original X-11 (12
-or 4) to an arbitrary period.
+trend.
+
+This package takes the period as a parameter in the initial centred moving
+average, the SI ratios and seasonal moving averages (applied to values at the
+same cycle position), the moving seasonality ratio and the extreme-value
+replacement. Some decision rules, however, keep the values of monthly X-11
+for every period: the Henderson trend filter is chosen from 9, 13 or 23 terms
+with the thresholds 1.0 and 3.5, the seasonal moving average is chosen with
+the MSR thresholds 2.5, 3.5, 5.5 and 6.5, and the filter weights are read
+from fixed tables. This is a design choice of v1.x; period-dependent rules
+may be considered in a future version, outside v1.x because they would
+change numerical results. Details:
+[docs/api.md](docs/api.md#6-what-is-generalized-to-any-period-and-what-is-not).
 
 References: Dagum, E. B. (1988), *The X-11-ARIMA/88 Seasonal Adjustment
 Method*; the [JDemetra+ X-11 theory
