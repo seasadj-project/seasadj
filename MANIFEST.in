@@ -1,0 +1,2 @@
+include tests/conftest.py
+global-exclude __pycache__ *.py[cod]
