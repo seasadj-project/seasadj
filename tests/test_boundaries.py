@@ -184,3 +184,29 @@ def test_max_t_upper_bound_succeeds_at_limit_with_forecast():
     assert r.n_observed == n_observed
     assert r.n_forecast == n_forecast
     assert r.n_observed + r.n_forecast == MAX_T
+
+
+# data and forecast each within max_t but together over it: det_hol/det_ao/
+# det_ls fill max_on + lead_on slots before check_inputs runs, so this used
+# to raise an unhandled IndexError (found 2026-11-03). check_total_length()
+# now rejects it first, in both the API and the file mode.
+
+@pytest.mark.parametrize("effects", [{}, {"ao_effect": [1.0] * (MAX_T - 100)}],
+                         ids=["no_effects", "ao_effect"])
+def test_max_t_total_with_forecast_rejected_just_above(effects):
+    data = _series(MAX_T - 100)
+    forecast = _series(101)
+    with pytest.raises(SeasadjError, match="data and forecast together"):
+        decompose(data, 7, forecast=forecast, **effects)
+
+
+def test_max_t_total_with_forecast_rejected_in_file_mode(tmp_path):
+    from conftest import _write_i00, _write_series
+    from seasadj import run
+
+    (tmp_path / "in_data").mkdir()
+    _write_i00(tmp_path / "in_data" / "i00_inp.dat", forecasting=1)
+    _write_series(tmp_path / "in_data" / "i01_org_ser.dat", _series(MAX_T - 100))
+    _write_series(tmp_path / "in_data" / "i02_fct_ser.dat", _series(101))
+    with pytest.raises(SeasadjError, match="data and forecast together"):
+        run(tmp_path)
